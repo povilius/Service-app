@@ -1,16 +1,17 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { ROUTES } from './router/consts';
-
-import './App.css';
-import Home from './pages/Home';
-import Services from './pages/Services';
-import AboutUs from './pages/AboutUs';
-import ErrorPage from './pages/ErrorPage';
-import RootLayout from './components/layout/RootLayout';
-import Login from './pages/Login';
-import SearchCategory from './pages/SearchCategory';
-import Register from './pages/Register';
-import { UserProvider } from './context/UserContext';
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { SnackbarProvider } from "notistack";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Home from "./pages/Home";
+import AboutUs from "./pages/AboutUs";
+import { ROUTES } from "./router/consts";
+import ErrorPage from "./pages/ErrorPage";
+import Login from "./pages/Login";
+import SearchCategory from "./pages/SearchCategory";
+import Register from "./pages/Register";
+import AuthLayout from "./components/layout/AuthLayout";
+import RootLayout from "./components/layout/RootLayout";
+import { UserProvider } from "./context/UserContext";
+import Services from "./pages/Services";
 
 const router = createBrowserRouter([
   {
@@ -26,16 +27,22 @@ const router = createBrowserRouter([
         element: <Services />,
       },
       {
-        path: ROUTES.ABOUTUS,
+        path: ROUTES.ABOUT_US,
         element: <AboutUs />,
-      },
-      {
-        path: ROUTES.LOGIN,
-        element: <Login />,
       },
       {
         path: ROUTES.SEARCH_CATEGORY,
         element: <SearchCategory />,
+      },
+    ],
+  },
+  {
+    element: <AuthLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: ROUTES.LOGIN,
+        element: <Login />,
       },
       {
         path: ROUTES.REGISTER,
@@ -45,11 +52,17 @@ const router = createBrowserRouter([
   },
 ]);
 
+const queryClient = new QueryClient();
+
 const App = () => {
   return (
-    <UserProvider>
-      <RouterProvider router={router} />
-    </UserProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <SnackbarProvider>
+          <RouterProvider router={router} />
+        </SnackbarProvider>
+      </UserProvider>
+    </QueryClientProvider>
   );
 };
 

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 interface ICategory {
   name: string;
@@ -13,14 +13,14 @@ const categorySchema = new mongoose.Schema<ICategory>({
   },
   color: {
     type: String,
-    default: '#000000',
+    default: "#000000",
   },
   url: {
     type: String,
-    default: 'https://img.icons8.com/?size=100&id=6644&format=png&color=000000',
+    default: "https://img.icons8.com/?size=100&id=6644&format=png&color=000000",
   },
 });
 
-const Category = mongoose.model<ICategory>('Category', categorySchema);
+const Category = mongoose.model<ICategory>("Category", categorySchema);
 
 export default Category;
