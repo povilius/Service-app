@@ -1,30 +1,32 @@
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ROUTES } from "../../router/consts";
 import Button from "../common/Button";
 import styles from "./Topbar.module.scss";
 import Logo from "../../assets/logo.svg";
-import { useContext } from "react";
 import Avatar from "../common/Avatar";
 import { UserContext } from "@/context/UserContext";
 
 const Topbar = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const links = [
-    {
-      href: ROUTES.HOME,
-      label: "Home",
-    },
-    {
-      href: ROUTES.SERVICES,
-      label: "Services",
-    },
-    {
-      href: ROUTES.ABOUT_US,
-      label: "About Us",
-    },
+    { href: ROUTES.HOME, label: "Home" },
+    { href: ROUTES.SERVICES, label: "Services" },
+    { href: ROUTES.ABOUT_US, label: "About Us" },
   ];
+
+  const handleAvatarClick = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const logout = () => {
+    console.log("Logout logic goes here.");
+    // Implement logout functionality
+    // Reset user context or clear token etc.
+  };
 
   return (
     <header className={styles.topbar}>
@@ -42,7 +44,22 @@ const Topbar = () => {
       </div>
       <div className={styles.rightSide}>
         {user ? (
-          <Avatar>{user.name[0]}</Avatar>
+          <>
+            <Avatar onClick={handleAvatarClick}>{user.name[0]}</Avatar>
+            {isDropdownOpen && (
+              <div className={styles.dropdownMenu}>
+                <Link to={ROUTES.PROFILE} className={styles.dropdownItem}>
+                  Profile
+                </Link>
+                <Link to={ROUTES.MY_BOOKING} className={styles.dropdownItem}>
+                  My booking
+                </Link>
+                <button onClick={logout} className={styles.dropdownItem}>
+                  Logout
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <Button onClick={() => navigate(ROUTES.LOGIN)} large>
             Login / Sign Up

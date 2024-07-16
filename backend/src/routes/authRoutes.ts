@@ -1,61 +1,55 @@
-import express from "express";
-import User from "../models/User";
-import { generateToken } from "../utils/password";
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import User from '../models/User';
+import authMiddleware, { UserPayload } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-router.post("/register", async (req, res) => {
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface JwtPayload {
+  id: string;
+  role: string;
+}
+
+router.post('/login', async (req, res) => {
+  const { email, password }: LoginRequest = req.body;
+
   try {
-    const user = req.body;
-    const existingUser = await User.findOne({ email: user.email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
-    const newUser = new User(user);
-    await newUser.save();
-    return res.status(201).json({ message: "User registered successfully" });
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error registering new user.",
-      error: (err as Error).message,
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET!, {
+      expiresIn: '1h',
     });
+
+    res.json({ token });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
   }
 });
 
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Please provide email and password" });
-    }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(401).json({ message: "Incorrect email or password" });
-    }
-
-    if (!(await user.isCorrectPassword(password))) {
-      return res.status(401).json({ message: "Incorrect email or password" });
-    }
-
-    const token = generateToken(user._id);
-
-    const userWithoutPassword = await User.findById(user._id).select(
-      "-password"
-    );
-
-    return res
-      .status(200)
-      .json({ status: "success", token, user: userWithoutPassword });
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Error logging in.", error: (err as Error).message });
+router.get('/admin', authMiddleware, (req, res) => {
+  if (req.currentUser?.role !== 'admin') {
+    return res.status(403).json({ message: 'Access denied' });
   }
+
+  res.json({ message: 'Welcome, admin' });
+});
+
+router.get('/user', authMiddleware, (req, res) => {
+  res.json({ message: 'Welcome, user' });
 });
 
 export default router;

@@ -3,7 +3,6 @@ import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Home from "./pages/Home";
 import AboutUs from "./pages/AboutUs";
-import { ROUTES } from "./router/consts";
 import ErrorPage from "./pages/ErrorPage";
 import Login from "./pages/Login";
 import SearchCategory from "./pages/SearchCategory";
@@ -12,6 +11,10 @@ import AuthLayout from "./components/layout/AuthLayout";
 import RootLayout from "./components/layout/RootLayout";
 import { UserProvider } from "./context/UserContext";
 import Services from "./pages/Services";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import AddCategory from "./components/admin/AddCategory";
+import AddBusiness from "./components/admin/AddBusiness";
+import { ROUTES } from "./router/consts";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +36,18 @@ const router = createBrowserRouter([
       {
         path: ROUTES.SEARCH_CATEGORY,
         element: <SearchCategory />,
+      },
+      {
+        path: ROUTES.ADMIN_DASHBOARD,
+        element: <AdminDashboard />,
+      },
+      {
+        path: ROUTES.ADD_CATEGORY,
+        element: <AddCategory />,
+      },
+      {
+        path: ROUTES.ADD_BUSINESS,
+        element: <AddBusiness />,
       },
     ],
   },

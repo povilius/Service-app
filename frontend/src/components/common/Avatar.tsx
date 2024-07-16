@@ -1,8 +1,20 @@
-import { PropsWithChildren } from "react";
-import styles from "./Avatar.module.scss";
+import styles from "./Avatar.module.scss"; // Assuming you have some styles defined
 
-const Avatar = ({ children }: PropsWithChildren) => {
-  return <div className={styles.avatar}>{children}</div>;
+interface AvatarProps {
+  onClick?: () => void; // Optional onClick handler
+  children: React.ReactNode;
+}
+
+const Avatar = ({ onClick, children }: AvatarProps) => {
+  return (
+    <div
+      className={styles.avatar}
+      onClick={onClick}
+      style={{ cursor: onClick ? "pointer" : "default" }}
+    >
+      {children}
+    </div>
+  );
 };
 
 export default Avatar;
