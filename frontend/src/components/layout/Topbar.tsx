@@ -8,7 +8,7 @@ import Avatar from "../common/Avatar";
 import { UserContext } from "@/context/UserContext";
 
 const Topbar = () => {
-  const { user } = useContext(UserContext);
+  const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -22,11 +22,7 @@ const Topbar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const logout = () => {
-    console.log("Logout logic goes here.");
-    // Implement logout functionality
-    // Reset user context or clear token etc.
-  };
+  // const logout = () => {};
 
   return (
     <header className={styles.topbar}>
